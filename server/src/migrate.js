@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { pool } = require('./db');
 
 const SQL = `
@@ -26,15 +25,27 @@ CREATE TABLE IF NOT EXISTS acknowledgments (
 );
 `;
 
-async function migrate() {
+// Idempotent (CREATE TABLE IF NOT EXISTS), so it's safe to call this on every
+// server boot — useful on Render's free plan, which has no shell access to
+// run a one-off migration command.
+async function runMigration() {
   await pool.query(SQL);
-  // eslint-disable-next-line no-console
-  console.log('Migration complete: devices, alerts, acknowledgments tables ready.');
-  await pool.end();
 }
 
-migrate().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error('Migration failed:', err);
-  process.exit(1);
-});
+// Still runnable directly for local dev: `npm run migrate`.
+if (require.main === module) {
+  require('dotenv').config();
+  runMigration()
+    .then(async () => {
+      // eslint-disable-next-line no-console
+      console.log('Migration complete: devices, alerts, acknowledgments tables ready.');
+      await pool.end();
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error('Migration failed:', err);
+      process.exit(1);
+    });
+}
+
+module.exports = { runMigration };

@@ -26,8 +26,10 @@ device has registered.
    - Build command: `npm install`
    - Start command: `npm start`
    - Env vars: `DATABASE_URL` (from step 2), `ADMIN_KEY` (pick a strong random value)
-4. After the first deploy, open a Render Shell (or run once locally against the
-   *External* Database URL) and run `npm run migrate` to create the tables.
+4. The server runs the (idempotent) migration automatically on every boot —
+   see `runMigration()` in `src/index.js` — so the tables get created on first
+   deploy with no manual step. (This also means Render's free plan, which has
+   no shell access, doesn't need it.)
 5. Your API is now at `https://<your-service>.onrender.com`. The admin page is
    at `/admin.html`.
 

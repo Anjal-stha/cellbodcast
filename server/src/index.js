@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const { pool } = require('./db');
 const { sendToAllDevices } = require('./push');
+const { runMigration } = require('./migrate');
 
 const app = express();
 app.use(express.json());
@@ -123,7 +124,18 @@ app.get('/alerts/:id/acks', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`cellbodcast server listening on port ${PORT}`);
-});
+
+runMigration()
+  .then(() => {
+    // eslint-disable-next-line no-console
+    console.log('Migration check complete (tables ready).');
+    app.listen(PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`cellbodcast server listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error('Startup migration failed — server not starting:', err);
+    process.exit(1);
+  });
