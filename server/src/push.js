@@ -30,7 +30,7 @@ async function sendToAllDevices({ alertId, title, body }) {
       // Android: use our high-importance emergency channel (configured client-side).
       channelId: 'emergency-alerts',
       // iOS: prominent but doesn't require Apple's restricted Critical Alerts entitlement.
-      interruptionLevel: 'timeSensitive',
+      interruptionLevel: 'time-sensitive',
     });
   }
 
