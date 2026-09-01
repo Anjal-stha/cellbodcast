@@ -56,7 +56,18 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
-      statusEl.textContent = `Sent. Alert #${data.alert.id} — pushed to ${data.push.sent} device(s), pruned ${data.push.pruned} dead token(s).`;
+      const lines = [
+        `Sent. Alert #${data.alert.id} — pushed to ${data.push.sent} device(s), pruned ${data.push.pruned} dead token(s).`,
+        '',
+        ...(data.push.results || []).map((r) => {
+          const short = r.to.replace('ExponentPushToken[', '').replace(']', '').slice(0, 12);
+          if (r.status === 'error') {
+            return `❌ ${short}…: ${r.message || (r.details && r.details.error) || 'error'}`;
+          }
+          return `✅ ${short}…: accepted by Expo (${r.status})`;
+        }),
+      ];
+      statusEl.textContent = lines.join('\n');
     } catch (err) {
       statusEl.textContent = 'Error: ' + err.message;
     }

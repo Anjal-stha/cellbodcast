@@ -64,7 +64,16 @@ async function sendToAllDevices({ alertId, title, body }) {
     );
   }
 
-  return { sent: messages.length, pruned: deadTokens.length };
+  // Surface per-device ticket results so the admin page can show *why* a
+  // push didn't land, not just a raw count.
+  const results = messages.map((m, i) => ({
+    to: m.to,
+    status: tickets[i] ? tickets[i].status : 'no-ticket',
+    details: tickets[i] && tickets[i].details ? tickets[i].details : undefined,
+    message: tickets[i] && tickets[i].message ? tickets[i].message : undefined,
+  }));
+
+  return { sent: messages.length, pruned: deadTokens.length, results };
 }
 
 module.exports = { sendToAllDevices };

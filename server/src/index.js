@@ -21,6 +21,13 @@ function requireAdminKey(req, res, next) {
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+app.get('/devices', requireAdminKey, async (_req, res) => {
+  const { rows } = await pool.query(
+    'SELECT id, expo_push_token, name, registered_at FROM devices ORDER BY registered_at DESC'
+  );
+  res.json(rows);
+});
+
 // --- Device registration -------------------------------------------------
 
 app.post('/register', async (req, res) => {
