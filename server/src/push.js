@@ -34,6 +34,10 @@ async function sendToAllDevices({ alertId, title, body }) {
     });
   }
 
+  // Map each message to a ticket (or a synthetic error ticket if the whole
+  // chunk request itself threw, e.g. a bad/missing FCM credential) so every
+  // message index lines up with a real result — not just the ones that
+  // happened to succeed.
   const chunks = expo.chunkPushNotifications(messages);
   const tickets = [];
   for (const chunk of chunks) {
@@ -43,6 +47,10 @@ async function sendToAllDevices({ alertId, title, body }) {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Error sending push chunk:', err);
+      const errorMessage = (err && err.message) || String(err);
+      chunk.forEach(() => {
+        tickets.push({ status: 'error', message: errorMessage, details: { error: 'RequestFailed' } });
+      });
     }
   }
 
@@ -69,8 +77,8 @@ async function sendToAllDevices({ alertId, title, body }) {
   const results = messages.map((m, i) => ({
     to: m.to,
     status: tickets[i] ? tickets[i].status : 'no-ticket',
-    details: tickets[i] && tickets[i].details ? tickets[i].details : undefined,
-    message: tickets[i] && tickets[i].message ? tickets[i].message : undefined,
+    details: tickets[i] && tickets[i].details,
+    message: tickets[i] && tickets[i].message,
   }));
 
   return { sent: messages.length, pruned: deadTokens.length, results };
