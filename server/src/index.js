@@ -28,6 +28,11 @@ app.get('/devices', requireAdminKey, async (_req, res) => {
   res.json(rows);
 });
 
+app.delete('/devices/:id', requireAdminKey, async (req, res) => {
+  await pool.query('DELETE FROM devices WHERE id = $1', [Number(req.params.id)]);
+  res.status(204).end();
+});
+
 // --- Device registration -------------------------------------------------
 
 app.post('/register', async (req, res) => {
