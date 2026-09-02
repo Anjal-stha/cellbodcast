@@ -10,6 +10,21 @@ that's registered, with an "I understand" button to acknowledge it.
 
 This is an MVP with one function end to end: **register a phone → push an
 alert → it appears full-screen on the target device → user acknowledges it.**
+This is working and verified on a real Android device.
+
+## Current status
+
+- ✅ Backend deployed on Render, tables auto-migrated on boot.
+- ✅ Android app built via EAS (`preview` profile), registered against the
+  user's own Firebase project (required for FCM push — Expo no longer
+  provides shared Android push credentials).
+- ✅ Real push delivery confirmed end-to-end: alert sent from `/admin.html` →
+  arrives on the phone → tapping it opens the full-screen modal → sound +
+  vibration fire → "I understand" acknowledges it.
+- ⏳ iOS not built/tested — needs a paid Apple Developer Program membership
+  first (see Cons below).
+- ⏳ No self-serve device management yet (see Cons below) — `DELETE
+  /devices/:id` exists as an admin-only cleanup tool for now.
 
 ## How it's built
 
@@ -43,6 +58,14 @@ just the overview.
   tower/baseband level to every phone in range, registered or not.
 - No geotargeting — real alerts only go to phones near specific towers; this
   MVP broadcasts to every registered device regardless of location.
+- Once a phone registers, it stays subscribed **permanently** — there's no
+  opt-out/unregister button in the app yet, and stale registrations are only
+  auto-pruned when a future send hits a dead token. Removal today means an
+  admin manually calling `DELETE /devices/:id`.
+- Android push requires setting up your own Firebase project
+  (`google-services.json` + a service account key uploaded to Expo) — this
+  isn't optional; without it, `expo-notifications` can't get an FCM instance
+  at all. See [app/README.md](app/README.md) for the exact steps.
 - iOS push requires a paid Apple Developer Program membership ($99/yr) to get
   an APNs credential — Android has no equivalent cost (FCM is free), so iOS
   support depends on that enrollment.

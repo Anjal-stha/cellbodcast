@@ -40,7 +40,31 @@ alert after idling.
 ## API
 
 - `POST /register` `{ expoPushToken, name }`
-- `POST /alerts` `{ title, body, severity }` — header `X-Admin-Key: <ADMIN_KEY>`
+- `POST /alerts` `{ title, body, severity }` — header `X-Admin-Key: <ADMIN_KEY>` —
+  fans out a push to every registered device and returns
+  `{ alert, push: { sent, pruned, results } }`, where `results[]` shows each
+  device's actual Expo ticket status (`"ok"` or `"error"` with a `message`) —
+  check this first if an alert isn't arriving.
 - `GET /alerts`
 - `POST /alerts/:id/ack` `{ expoPushToken }`
 - `GET /alerts/:id/acks`
+- `GET /devices` — header `X-Admin-Key: <ADMIN_KEY>` — list all registered devices
+- `DELETE /devices/:id` — header `X-Admin-Key: <ADMIN_KEY>` — remove a device
+  (e.g. a stale/test registration); there's no self-serve unregister yet, so
+  this is currently the only way to remove a subscriber
+
+## Android push notes
+
+`expo-server-sdk`'s push payload must use Expo's exact field values — e.g.
+`interruptionLevel` must be `time-sensitive` (kebab-case), not `timeSensitive`.
+A malformed field causes Expo to reject the *entire* request before it ever
+reaches FCM/APNs, and the failure only surfaces in `push.results[].message`,
+not as an HTTP error on `POST /alerts` (that call still returns 201). Always
+check `results[]` on the response, not just `push.sent`, when debugging
+delivery.
+
+Android delivery separately requires the *receiving app* to be built with a
+real Firebase project's `google-services.json` and its service account key
+uploaded to Expo — see [`/app/README.md`](../app/README.md) for that setup.
+Without it, sends fail server-side with an Expo API validation/credential
+error, not silently.
