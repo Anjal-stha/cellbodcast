@@ -4,3 +4,7 @@ node_modules/
 dist/
 *.log
 .DS_Store
+
+# Firebase service account key (secret — used once to upload to Expo via
+# `eas credentials`, never committed).
+*firebase-adminsdk*.json

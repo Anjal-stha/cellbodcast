@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "595022227022",
+    "project_id": "cellbodcast",
+    "storage_bucket": "cellbodcast.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595022227022:android:11c22246e9e9d5c38bc51f",
+        "android_client_info": {
+          "package_name": "com.anjal0001.cellbodcast"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKqxihrB8N3bZsP907D947bCYT8VKT5rY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

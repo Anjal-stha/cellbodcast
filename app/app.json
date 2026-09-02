@@ -7,19 +7,27 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
+      "bundleIdentifier": "com.anjal0001.cellbodcast",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
+      "package": "com.anjal0001.cellbodcast",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": ["VIBRATE", "RECEIVE_BOOT_COMPLETED"]
+      "permissions": [
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +40,12 @@
           "color": "#c0392b"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "04803ff9-1aa9-4e07-92f1-df8ce4ad9322"
+      }
+    },
+    "owner": "anjal0001"
   }
 }
